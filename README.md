@@ -9,7 +9,6 @@ Set of packages to simplify development in Python :
 
 - Python 3.4+ (Python 3.6+ is preferred)
 - [colorama](https://github.com/tartley/colorama)
-- [fsscan](https://github.com/krakozaure/fsscan)
 - [ruamel.yaml](https://bitbucket.org/ruamel/yaml)
 - [toml](https://github.com/uiri/toml)
 

@@ -1,10 +1,9 @@
-
+from collections.abc import Sequence
+from fnmatch import fnmatch
 import collections
 import io
 import os
 import pathlib
-
-import fsscan
 
 from ..compat import fspath
 
@@ -93,14 +92,28 @@ def is_file(path):
         return False
 
 
-def search_files(directory, patterns=None, **kwargs):
-    return fsscan.run(
-        directory,
-        patterns=patterns,
-        ignore_case=False,
-        wanted_type=fsscan.FILE_TYPE,
-        recursive=False,
-        on_error=None,
-        follow_links=False,
-        callback=fsscan.cast_to_Path,
-    )
+def search_files(directory, patterns=None, recursive=False):
+    directory = pathlib.Path(directory)
+
+    # any_fnmatch iterate on sequence of string
+    if isinstance(patterns, str) or not isinstance(patterns, Sequence):
+        patterns = (patterns,)
+    patterns = tuple(p for p in set(patterns) if p and isinstance(p, str))
+
+    # Search could be recursive
+    glob_pattern = "**" if recursive else "."
+    # Filename could be filtered wih 0, 1 or N patterns
+    glob_pattern += '/*'
+
+    # Scan directory and yield only required file paths
+    for entry in directory.glob(glob_pattern):
+        if entry.is_file() and any_fnmatch(entry.name, patterns):
+            yield entry
+
+
+def any_fnmatch(entry_name, patterns):
+    # No patterns, so return all paths
+    if not patterns:
+        return True
+    # Check if at least one pattern matches the entry name
+    return any(fnmatch(entry_name, pattern) for pattern in patterns)
