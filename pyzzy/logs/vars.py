@@ -62,42 +62,39 @@ _tags = {
 }
 
 
-_default_config_template = r"""
-{
+DEFAULT_CONFIG = {
     "version": 1,
-    "disable_existing_loggers": false,
+    "disable_existing_loggers": False,
 
     "formatters": {
-
         "console": {
             "()": "pyzzy.logs.PzStreamFormatter",
             "datefmt": "%Y-%m-%d_%H:%M:%S",
             "format": "%(levelname)-6s %(message)s",
-            "colored": true,
-            "tracebacks": false
+            "colored": True,
+            "tracebacks": False,
         },
-
         "file": {
             "datefmt": "%Y-%m-%d_%H:%M:%S",
-            "format": "%(asctime)s:%(msecs)-03.0f - %(levelname)-8s - %(name)-10.10s - %(module)10.10s:%(lineno)03d :: %(message)s"
-        }
-
+            "format": (
+                "%(asctime)s:%(msecs)-03.0f - %(levelname)-8s"
+                " - %(name)-10.10s - %(module)10.10s:%(lineno)03d"
+                " :: %(message)s"
+            ),
+        },
     },
 
     "handlers": {
-
         "console_prod": {
             "class": "logging.StreamHandler",
             "level": "WARNING",
-            "formatter": "console"
+            "formatter": "console",
         },
-
         "console_dev": {
             "class": "logging.StreamHandler",
             "level": "DEBUG",
-            "formatter": "console"
+            "formatter": "console",
         },
-
         "file": {
             "()": "pyzzy.logs.PzFileHandler",
             "level": "DEBUG",
@@ -105,65 +102,54 @@ _default_config_template = r"""
             "filename": "logs/%(script_name)s_%(date)s.log",
             "mode": "a",
             "encoding": "utf-8",
-            "delay": true
+            "delay": True,
         },
-
         "tr_file": {
             "()": "pyzzy.logs.PzTimedRotatingFileHandler",
             "level": "DEBUG",
             "formatter": "file",
-            "filename": "",
+            "filename": "logs/%(script_name)s.log",
             "when": "midnight",
             "interval": 1,
             "backupCount": 90,
             "encoding": "utf-8",
-            "delay": true,
-            "utc": false,
+            "delay": True,
+            "utc": False,
             "suffix": "%Y%m%d%H%M%S.log",
-            "extMatch": "^\\d{8}([-_]?\\d{2,6})?(\\.\\w+)?$"
-        }
-
+            "extMatch": "^\\d{8}([-_]?\\d{2,6})?(\\.\\w+)?$",
+        },
     },
+
     "loggers": {
-
         "console": {
-            "propagate": false,
+            "propagate": False,
             "level": "DEBUG",
-            "handlers": ["console_dev"]
+            "handlers": ["console_dev"],
         },
-
         "file": {
-            "propagate": false,
+            "propagate": False,
             "level": "DEBUG",
-            "handlers": ["file"]
+            "handlers": ["file"],
         },
-
         "tr_file": {
-            "propagate": false,
+            "propagate": False,
             "level": "DEBUG",
-            "handlers": ["tr_file"]
+            "handlers": ["tr_file"],
         },
-
         "production": {
-            "propagate": false,
+            "propagate": False,
             "level": "DEBUG",
-            "handlers": ["console_prod", "tr_file"]
+            "handlers": ["console_prod", "tr_file"],
         },
-
         "development": {
-            "propagate": false,
+            "propagate": False,
             "level": "DEBUG",
-            "handlers": ["console_dev", "file"]
-        }
-
+            "handlers": ["console_dev", "file"],
+        },
     },
 
     "root": {
         "level": "DEBUG",
-        "handlers": ["console_prod", "tr_file"]
-    }
+        "handlers": ["console_prod", "tr_file"],
+    },
 }
-"""
-
-# Ensure configuration is an ordered object
-DEFAULT_CONFIG = load_json(_default_config_template)
