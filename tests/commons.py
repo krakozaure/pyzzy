@@ -28,11 +28,11 @@ def get_data(factory=None):
 
 def obj2str(var, indent=0):
 
-    items = var.items() if isinstance(var, dict) else var
+    items = var.items() if isinstance(var, collections.abc.Mapping) else var
 
     # Python < 3.6 doesn't preserve order so at least,
     # sort the pairs to allow check on value
-    if sys.version_info < (3, 6) and isinstance(var, dict):
+    if sys.version_info < (3, 6) and isinstance(var, collections.abc.Mapping):
         items = sorted(items, key=lambda item: item[0])
 
     key_len = max(len(('%s:' % k)) for k, v in items)
@@ -42,7 +42,7 @@ def obj2str(var, indent=0):
     lines = ''
     for key, value in items:
         key = ('%s:' % key).ljust(key_len)
-        if isinstance(value, (dict, list, tuple)):
+        if isinstance(value, (collections.abc.Mapping, list, tuple)):
             value = '\n%s%s' % (prefix, obj2str(value, indent + 1))
         lines += frmt % (prefix * indent, key, value)
 
