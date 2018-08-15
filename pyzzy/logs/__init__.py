@@ -1,94 +1,99 @@
+from logging import getLogger
 import logging
 import logging.config
 import warnings
 
-import colorama
-
 # Allows imports from pyzzy.logs.XXXX (useful for configuration files)
-from logging import getLogger
+from .core import PzConsoleFormatter
 from .core import PzFileHandler
-from .core import PzStreamFormatter
 from .core import PzTimedRotatingFileHandler
+from .core import PzWarningsFormatter
 
 # Logging configuration handling
-from ..data import load, dump
+from ..data import load
 from ..utils import is_file
 from .vars import DEFAULT_CONFIG
 
 
 __all__ = [
     "getLogger",
-    "PzFileHandler",
-    "PzStreamFormatter",
-    "PzTimedRotatingFileHandler",
     "init_logger",
+    "init_logging",
     "load_config",
-    "dump_config",
+    "PzConsoleFormatter",
+    "PzFileFormatter",
+    "PzFileHandler",
+    "PzTimedRotatingFileHandler",
+    "PzWarningsFormatter",
 ]
 
 
-colorama.init()
+def init_logger(name, config=None, captureWarnings=True, raiseExceptions=False):
 
+    warnings.warn(
+        "'pyzzy.init_logger' will be deprecated in future releases !"
+        "\nPlease use 'pyzzy.init_logging' and then 'pyzzy.getLogger' !",
+        PendingDeprecationWarning,
+    )
 
-def init_logger(name, config=True, captureWarnings=True, raiseExceptions=False):
-    """Load (or not) a logging configuration and create the logger
+    init_logging(
+        config=config,
+        capture_warnings=captureWarnings,
+        raise_exceptions=raiseExceptions,
+    )
 
-    Parameters
-    ----------
-    name (None, str) :
-        Name used to identify the logger
-        Same name used by `logging.getLogger(name=None)`
-    config (True, dict, PathLike) :
-        Configuration to load before the logger creation
-        If config is True, DEFAULT_CONFIG will be loaded
-    """
-
-    if config:
-        load_config(config, captureWarnings, raiseExceptions)
-
-    return logging.getLogger(name)
+    return getLogger(name)
 
 
 def load_config(config=None, captureWarnings=True, raiseExceptions=False):
-    """Load logging configuration from user or default configuration"""
 
-    if config is True or not config:
-        config = DEFAULT_CONFIG
+    warnings.warn(
+        "'pyzzy.logs.load_config' will be deprecated in future releases !"
+        "\nPlease use 'pyzzy.init_logging' !",
+        PendingDeprecationWarning,
+    )
 
-    # config can be loaded from files handled by pyzzy.data
-    if config and is_file(config):
-        config = load(config)
-
-    try:
-        logging.config.dictConfig(config)
-    except (ValueError, TypeError, AttributeError, ImportError) as exc:
-        warnings.warn(str(exc))
-        logging.config.dictConfig(DEFAULT_CONFIG)
-
-    logging.captureWarnings(captureWarnings)
-    if captureWarnings:
-        warnings.formatwarning = _logging_format_warning
-
-    # Should be true for development, false in production
-    logging.raiseExceptions = raiseExceptions
-
-
-def dump_config(target, config=None):
-    """Dump logging configuration from user or default configuration"""
-    dump(config or DEFAULT_CONFIG, target, silent_fail=False)
-
-
-def _simple_format_warning(message, category, filename, lineno, **kwargs):
-    return "%s:%s [%s] %s\n" % (
-        __name__,
-        lineno,
-        category.__name__,
-        str(message),
+    init_logging(
+        config=config,
+        capture_warnings=captureWarnings,
+        raise_exceptions=raiseExceptions,
     )
 
 
-def _logging_format_warning(message, *args, **kwargs):
-    return str(message)
+def init_logging(config=None, capture_warnings=True, simple_warnings=True,
+                 raise_exceptions=False):
+    """Load logging configuration from user or default configuration
+
+    Parameters
+    ----------
+    config (None, PathLike, dict, False) :
+        Whole configuration to load for the logging module
+        If config is None, DEFAULT_CONFIG will be loaded
+        If config is a path, it can be loaded from files handled by pyzzy.data
+        If config is False-like, no configuration is loaded
+    capture_warnings (bool) :
+        Capture (or not) the warnings and delegate to the 'py.warnings' logger
+    simple_warnings (bool) :
+        Simplify warning format to return message like 'Category: Message'
+    raise_exceptions (bool) :
+        Should be False in production, True for development
+    """
+
+    if config is None:
+        config = DEFAULT_CONFIG
+    elif is_file(config):
+        config = load(config)
+
+    if config:
+        logging.config.dictConfig(config)
+
+    logging.captureWarnings(capture_warnings)
+
+    if simple_warnings:
+        warnings.formatwarning = simple_warning_format
+
+    logging.raiseExceptions = raise_exceptions
 
 
-warnings.formatwarning = _simple_format_warning
+def simple_warning_format(message, category, filename, lineno, line=None):
+    return "%s: %s" % (category.__name__, str(message))

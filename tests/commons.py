@@ -50,7 +50,7 @@ def obj2str(var, indent=0):
 
 
 def use_logger(logger):
-    message = '[%s] The quick brown fox jumps over the lazy dog' % pyversion
+    message = 'The quick brown fox jumps over the lazy dog'
     methods = [
         'critical',
         'error',
