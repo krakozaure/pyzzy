@@ -161,11 +161,6 @@ DEFAULT_CONFIG = {
             "level": "DEBUG",
             "handlers": ["console_production", "tr_file_warnings"],
         },
-        "tests": {
-            "propagate": False,
-            "level": "DEBUG",
-            "handlers": ["console_development", "file"],
-        },
     },
     "root": {
         "level": "DEBUG",
