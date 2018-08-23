@@ -1,7 +1,13 @@
 from copy import deepcopy
 from itertools import chain as itertools_chain
 
-from ..utils import UNSET
+
+class Unset(object):
+    def __repr__(self):
+        return "<UNSET>"
+
+
+UNSET = Unset()
 
 
 class NestedOperationError(Exception):

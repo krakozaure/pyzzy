@@ -1,5 +1,6 @@
-# All imports below allows access to main features from module top-level
+import warnings
 
+# Allows access to main features from module top-level
 from .data import (
     dump,
     dump_conf,
@@ -17,6 +18,11 @@ from .data import (
 from .logs import init_logger, init_logging, getLogger
 from .utils import set_working_directory
 
+
+__author__ = "krakozaure"
+__license__ = "MIT"
+__name__ = "pyzzy"
+__version__ = "0.0.5"
 
 __all__ = [
     "dump",
@@ -37,7 +43,6 @@ __all__ = [
     "set_working_directory",
 ]
 
-import warnings
 
 warnings.filterwarnings(
     "once", category=PendingDeprecationWarning, module="pyzzy"

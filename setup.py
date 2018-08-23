@@ -7,7 +7,7 @@ setuptools.setup(
     name="pyzzy",
     version="0.0.5",
     author="krakozaure",
-    license="MIT",
+    license="MIT License",
     author_email="",
     description="Set of packages to simplify development in Python",
     long_description=long_description,
@@ -26,10 +26,12 @@ setuptools.setup(
     classifiers=(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: Implementation :: CPython",
     ),
 )

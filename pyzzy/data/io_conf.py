@@ -4,6 +4,7 @@ import configparser
 from ..utils import open_stream, identity
 from . import defaults
 
+
 __all__ = ["dump_conf", "load_conf", "conf2dict"]
 
 
