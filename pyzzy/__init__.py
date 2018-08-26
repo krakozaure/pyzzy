@@ -21,7 +21,6 @@ from .utils import set_working_directory
 
 __author__ = "krakozaure"
 __license__ = "MIT"
-__name__ = "pyzzy"
 __version__ = "0.0.6"
 
 __all__ = [

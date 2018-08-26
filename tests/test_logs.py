@@ -83,7 +83,7 @@ def test_root_console_handler_output_without_traceback():
     with capture_handler_stream(logger, "console_production") as stream:
         try:
             print("1 / 0 =", 1 / 0)
-        except ZeroDivisionError as exc:
+        except ZeroDivisionError:
             logger.exception(message)
         captured_output = stream.getvalue()
 

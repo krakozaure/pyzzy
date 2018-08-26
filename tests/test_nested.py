@@ -68,7 +68,7 @@ def test_nproxy_getitem(DATA_SOURCE):
 
 def test_nproxy_getitem_raises():
     with pytest.raises(nested.NestedOperationError):
-        nested.NProxy()["key1[0].key2[-1].key3"]
+        print(nested.NProxy()["key1[0].key2[-1].key3"])
 
 
 def test_nproxy_nset(DATA_SOURCE):
