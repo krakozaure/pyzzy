@@ -111,7 +111,7 @@ DEFAULT_CONFIG = {
             "()": "pyzzy.logs.PzFileHandler",
             "level": "DEBUG",
             "formatter": "file",
-            "filename": "logs/%(script_name)s.log",
+            "filename": "logs/%(script_name)s_%(date)s.log",
             "mode": "a",
             "encoding": "utf-8",
             "delay": True,
@@ -159,7 +159,7 @@ DEFAULT_CONFIG = {
         "py.warnings": {
             "propagate": False,
             "level": "DEBUG",
-            "handlers": ["console_production", "tr_file_warnings"],
+            "handlers": ["console_warnings", "tr_file_warnings"],
         },
     },
     "root": {

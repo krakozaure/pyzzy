@@ -1,12 +1,23 @@
 import contextlib
 import io
+import json
 import logging
+import os
+import re
 import time
-
-import _pytest.logging
-import pytest
+import warnings
 
 import pyzzy as pz
+
+
+os.chdir(os.path.dirname(__file__))
+
+pz.init_logging(
+    config=pz.logs.DEFAULT_CONFIG,
+    capture_warnings=True,
+    simple_warnings=True,
+    raise_exceptions=True,  # no error swallowing (tests=development mode)
+)
 
 
 @contextlib.contextmanager
@@ -28,22 +39,30 @@ def get_handler_by_name(handlers, name):
             return handler
 
 
-@pytest.fixture()
-def logging_config():
-    logging.config.dictConfig(pz.logs.DEFAULT_CONFIG)
-    return pz.logs.DEFAULT_CONFIG
+def test_get_config_from_None():
+    assert pz.logs._get_config(config=None) == pz.logs.DEFAULT_CONFIG
 
 
-def test_root_handlers_names(logging_config):
+def test_get_config_from_file():
+    config_file = "configurations/logging.json"
+    with open(config_file) as f:
+        expected_config = json.load(f)
+    assert pz.logs._get_config(config=config_file) == expected_config
+
+
+def test_root_handlers_names():
+    import _pytest.logging
+
     logger = logging.getLogger()
     root_handlers_names = [
-        h.get_name() for h in logger.handlers
+        h.get_name()
+        for h in logger.handlers
         if not isinstance(h, _pytest.logging.LogCaptureHandler)
     ]
-    assert root_handlers_names == ['console_production', 'tr_file']
+    assert root_handlers_names == ["console_production", "tr_file"]
 
 
-def test_root_console_handler_output(logging_config):
+def test_root_console_handler_output():
     logger = logging.getLogger()
     message = "Log message"
 
@@ -57,7 +76,23 @@ def test_root_console_handler_output(logging_config):
     assert pz.logs.vars._colored_tags[logging.DEBUG] not in captured_output
 
 
-def test_root_trfile_handler_output(logging_config):
+def test_root_console_handler_output_without_traceback():
+    logger = logging.getLogger()
+    message = "Zero division error !"
+
+    with capture_handler_stream(logger, "console_production") as stream:
+        try:
+            print("1 / 0 =", 1 / 0)
+        except ZeroDivisionError as exc:
+            logger.exception(message)
+        captured_output = stream.getvalue()
+
+    assert "ZeroDivisionError" not in captured_output
+    assert message in captured_output
+    assert pz.logs.vars._colored_tags[logging.ERROR] in captured_output
+
+
+def test_root_trfile_handler_output():
     logger = logging.getLogger()
     message = "Log message"
 
@@ -69,16 +104,40 @@ def test_root_trfile_handler_output(logging_config):
     assert message in captured_output
     assert logging._levelToName[logging.ERROR] in captured_output
     assert logging._levelToName[logging.DEBUG] in captured_output
-    assert time.strftime('%Y-%m-%d %H:%M') in captured_output
+    assert time.strftime("%Y-%m-%d %H:%M") in captured_output
     assert logger.name in captured_output
 
 
-def main():
-    logging_config_ = logging_config()
-    test_root_handlers_names(logging_config_)
-    test_root_console_handler_output(logging_config_)
-    test_root_trfile_handler_output(logging_config_)
+def test_warnings_console_formatter():
+    logger = logging.getLogger("py.warnings")
+    message = "Warning message !"
+
+    with capture_handler_stream(logger, "console_warnings") as stream:
+        warnings.warn(message)
+        logger.warning(message)
+        captured_output = stream.getvalue()
+
+    warning_re = "(?P<file>.+?):(?P<line>\d+?): (?P<message>.+)"
+    warning_cre = re.compile(warning_re)
+    sre_matches = [match for match in warning_cre.finditer(captured_output)]
+
+    assert len(sre_matches) == 2
+    assert sre_matches[0].group("file") in __file__
+    assert sre_matches[0].group("message") == "UserWarning: Warning message !"
 
 
-if __name__ == "__main__":
-    main()
+def test_success_and_failure_logger_methods():
+    logger = logging.getLogger("development")
+    message = "Log message"
+
+    with capture_handler_stream(logger, "console_development") as stream:
+        logger.failure(message)
+        logger.success(message)
+        captured_output = stream.getvalue()
+
+    failure_level = logging._nameToLevel["FAILURE"]
+    success_level = logging._nameToLevel["SUCCESS"]
+
+    assert message in captured_output
+    assert pz.logs.vars._colored_tags[failure_level] in captured_output
+    assert pz.logs.vars._colored_tags[success_level] in captured_output

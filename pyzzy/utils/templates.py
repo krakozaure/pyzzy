@@ -24,13 +24,13 @@ def render(string, datas, default=None, crx_idpattern=CRX_VAR):
     def repl(sre_match, default=default):
         if default is None:
             default = sre_match.group(0)
-        res = xget(datas, sre_match.group(1), default=default)
+        res = traverse(datas, sre_match.group(1), default=default)
         return str(res)
 
     return crx_idpattern.sub(repl, string)
 
 
-def xget(obj, key, default=None):
+def traverse(obj, key, default=None):
 
     if not isinstance(key, str):
         return default
@@ -57,17 +57,17 @@ def get_value(obj, key, default=None):
     return item(obj, key) or attr(obj, key) or default
 
 
-def attr(obj, name):
-    try:
-        return getattr(obj, name)
-    except (AttributeError, TypeError) as exc:
-        return None
-
-
 def item(obj, name):
     try:
         if isinstance(obj, Sequence):
             name = int(name)
         return getitem(obj, name)
-    except (IndexError, KeyError, TypeError, ValueError) as exc:
+    except (IndexError, KeyError, TypeError, ValueError):
+        return None
+
+
+def attr(obj, name):
+    try:
+        return getattr(obj, name)
+    except (AttributeError, TypeError):
         return None

@@ -11,26 +11,23 @@ class DeepChainMap(ChainMap):
         for mapping in self.maps:
             if key in mapping:
                 mapping[key] = value
-                return
-        self.maps[0][key] = value
+                break
+        else:
+            self.maps[0][key] = value
 
     def __delitem__(self, key):
         for mapping in self.maps:
             if key in mapping:
                 del mapping[key]
-                return
-        raise KeyError(key)
+                break
+        else:
+            raise KeyError(key)
 
     def merge(self):
         return merge_dicts(*self.maps[::-1])
 
 
 def merge_dicts(*dicts):
-    if not all(isinstance(d, dict) for d in dicts):
-        raise TypeError("Object in *dicts not of type dict")
-    if len(dicts) < 2:
-        raise ValueError("Requires 2 or more dict objects")
-
     return reduce(lambda x, y: dict(_merge_2_dicts(x, y)), dicts[1:], dicts[0])
 
 
@@ -66,7 +63,7 @@ class AttrDict(dict):
             raise AttributeError("No such attribute: " + name)
 
     def __dir__(self):
-        return self.keys()
+        return list(self.keys())
 
 
 def ndict_cast(var, factory=Namespace):
@@ -75,10 +72,6 @@ def ndict_cast(var, factory=Namespace):
         'attrdict': AttrDict,
         'namespace': Namespace,
     }
-
-    if not callable(factory) and str(factory).lower() not in factories:
-        message = "factory must be callable or in %s" % list(factories)
-        raise TypeError(message)
 
     if not callable(factory):
         factory = factories.get(str(factory).lower(), Namespace)

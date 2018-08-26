@@ -63,9 +63,10 @@ class PzWarningsFormatter(logging.Formatter):
 
         record.filename = getattr(msg, "filename", record.filename)
         record.lineno = getattr(msg, "lineno", record.lineno)
-        record.module = os.path.basename(record.filename).rsplit(".", 1)[0]
-
         record.message = getattr(msg, "message", record.msg)
+
+        record.filename = os.path.basename(record.filename)
+        record.module = os.path.splitext(record.filename)[0]
         record.message = str(record.message)
 
         return record
@@ -123,7 +124,7 @@ def _find_warning_caller(filename, lineno, function):
     # FrameInfo(frame, filename, lineno, function, code_context, index)
     for frame_info in inspect.stack():
         if frame_info[1:4] == (filename, lineno, function):
-            return frame_info.frame
+            return frame_info[0]
 
 
 def _set_log_path(log_path):

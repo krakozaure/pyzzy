@@ -12,16 +12,9 @@ class predicate_dispatch:
         self._instance = None
         update_wrapper(self, default_callback)
 
-    def __get__(self, instance, cls):
-        self._instance = instance
-        return self
-
     def __call__(self, *args, **kwargs):
         callback = self.dispatch(*args, **kwargs)
-        if self._instance:
-            return callback(self._instance, *args, **kwargs)
-        else:
-            return callback(*args, **kwargs)
+        return callback(*args, **kwargs)
 
     def register(self, predicate, func=None):
         # If called with dispatcher.register(predicate, callback)
@@ -34,13 +27,16 @@ class predicate_dispatch:
 
     def dispatch(self, *args, **kwargs):
         for predicate, callback in self.registry.items():
-            if self.match(predicate, *args, **kwargs):
-                return callback
+            if predicate_match(predicate, *args, **kwargs):
+                used_callback = callback
+                break
         else:
-            return self.default_callback
+            used_callback = self.default_callback
+        return used_callback
 
-    def match(self, predicate, var, *args, **kwargs):
-        try:
-            return predicate(var, *args, **kwargs)
-        except (AttributeError, KeyError, IndexError, TypeError, ValueError):
-            return False
+
+def predicate_match(predicate, var, *args, **kwargs):
+    try:
+        return predicate(var, *args, **kwargs)
+    except (AttributeError, KeyError, IndexError, TypeError, ValueError):
+        return False

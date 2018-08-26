@@ -1,5 +1,5 @@
 from collections.abc import MutableMapping, MutableSequence
-from pyzzy.utils.dispatchers import predicate_dispatch
+from pyzzy.utils.dispatchers import predicate_dispatch, predicate_match
 
 
 def is_mapping(var):
@@ -27,36 +27,30 @@ def uppercase_on_sequence(sequence):
     return type(sequence)(uppercase(val) for val in sequence)
 
 
+def test_predicate_match():
+    def is_number(var):
+        return float(var)
+
+    assert predicate_match(is_number, 123.456)
+
+
+def test_predicate_match_return_false():
+    def is_number(var):
+        return float(var)
+
+    assert predicate_match(is_number, None) is False
+
+
 def test_uppercase_string():
-    print("[*] Testing uppercase_string()...")
     string_sample = "abcdefghijklmnop"
     assert uppercase(string_sample) == "ABCDEFGHIJKLMNOP"
 
 
 def test_uppercase_dict():
-    print("[*] Testing uppercase_dict()...")
     dict_sample = {"abcd": "efgh", "ijkl": "mnop"}
     assert uppercase(dict_sample) == {"ABCD": "EFGH", "IJKL": "MNOP"}
 
 
 def test_uppercase_list():
-    print("[*] Testing uppercase_list()...")
     list_sample = ["abcd", "efgh", "ijkl", "mnop"]
     assert uppercase(list_sample) == ["ABCD", "EFGH", "IJKL", "MNOP"]
-
-
-def test_uppercase_integer():
-    print("[*] Testing uppercase_integer()...")
-    integer_sample = 123456789
-    assert uppercase(integer_sample) == "123456789"
-
-
-def main():
-    test_uppercase_string()
-    test_uppercase_list()
-    test_uppercase_dict()
-    test_uppercase_integer()
-
-
-if __name__ == "__main__":
-    main()

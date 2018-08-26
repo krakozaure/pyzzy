@@ -1,177 +1,131 @@
+import pytest
+
 from pyzzy.utils import nested
 
 
-DATA_SOURCE = {
-    "key1": [
-        {
-            "key2": [
-                {
-                    "key3": "value1"
-                }
-            ]
-        }
-    ]
-}
+@pytest.fixture
+def DATA_SOURCE():
+    return {"key1": [{"key2": [{"key3": "value1"}]}]}
 
 
-def test_nget():
-    data = DATA_SOURCE
-    proxy = nested.NProxy(data)
-    expected = data["key1"][0]["key2"][-1]["key3"]
-    result = proxy.nget("key1[0].key2[-1].key3")
-    assert result == expected
+def test_proxybase_dunders():
+    data = {"key1": "value1", "key2": "value2"}
+    pb = nested.ProxyBase(data)
+    assert pb
+    assert dir(pb) == dir(data)
+    assert sorted(k for k in pb) == sorted(k for k in data)
+    assert len(pb) == len(data)
+    assert repr(pb) == repr(data)
+    assert str(pb) == str(data)
 
 
-def test_nget_raises():
-    """Raise exception when key path is invalid and no default value is given"""
-    data = {}
-    proxy = nested.NProxy(data)
-    try:
-        proxy.nget("key1[0].key2[-1].key3", default=nested.UNSET)
-    except nested.NestedOperationError:
-        pass
+def test_unset():
+    assert repr(nested.UNSET) == "<UNSET>"
 
 
-def test_nget_default():
-    """Get default value (None) when key path is invalid"""
-    data = {}
-    proxy = nested.NProxy(data)
-    expected = None
-    result = proxy.nget("key1[0].key2[-1].key3")  # default=None
-    assert result == expected
+def test_resolve_key_path_with_invalid_keys_paths():
+    assert nested.resolve_key_path({}, "") == ({}, "")
+    assert nested.resolve_key_path({}, None) == ({}, None)
 
 
-def test_nget_getitem():
-    data = DATA_SOURCE
-    proxy = nested.NProxy(data)
-    expected = data["key1"][0]["key2"][-1]["key3"]
-    result = proxy["key1[0].key2[-1].key3"]
-    assert result == expected
+def test_resolve_key_path_with_simple_key_path(DATA_SOURCE):
+    assert nested.resolve_key_path(DATA_SOURCE, "key1") == (DATA_SOURCE, "key1")
 
 
-def test_nget_getitem_raises():
-    """Raise exception when key path is invalid and no default value is given"""
-    data = {}
-    proxy = nested.NProxy(data)
-    try:
-        proxy["key1[0].key2[-1].key3"]
-    except nested.NestedOperationError:
-        pass
+def test_split_key_path_raises_valueerror():
+    with pytest.raises(ValueError):
+        nested._split_key_path("")
+
+    with pytest.raises(ValueError):
+        nested._split_key_path(".")
+
+    with pytest.raises(ValueError):
+        nested._split_key_path("[]")
 
 
-def test_nset():
-    data = nested.ncopy(DATA_SOURCE)
-    proxy = nested.NProxy(data)
+def test_split_keys_with_simple_key_path():
+    assert nested._split_keys("key") == ["key"]
+
+
+def test_nproxy_nget(DATA_SOURCE):
+    expected = DATA_SOURCE["key1"][0]["key2"][-1]["key3"]
+    assert nested.NProxy(DATA_SOURCE).nget("key1[0].key2[-1].key3") == expected
+
+
+def test_nproxy_nget_raises():
+    with pytest.raises(nested.NestedOperationError):
+        nested.NProxy().nget("key1[0].key2[-1].key3", default=nested.UNSET)
+
+
+def test_nproxy_nget_default():
+    assert nested.NProxy().nget("key1[0].key2[-1].key3") is None
+
+
+def test_nproxy_getitem(DATA_SOURCE):
+    expected = DATA_SOURCE["key1"][0]["key2"][-1]["key3"]
+    assert nested.NProxy(DATA_SOURCE)["key1[0].key2[-1].key3"] == expected
+
+
+def test_nproxy_getitem_raises():
+    with pytest.raises(nested.NestedOperationError):
+        nested.NProxy()["key1[0].key2[-1].key3"]
+
+
+def test_nproxy_nset(DATA_SOURCE):
+    proxy = nested.NProxy(DATA_SOURCE)
     expected = "value2 (created)"
     proxy.nset("key1[0].key2[-1].key4", expected)
-    result = data["key1"][0]["key2"][-1]["key4"]
-    assert result == expected
+    assert proxy["key1"][0]["key2"][-1]["key4"] == expected
 
 
-def test_nset_raises():
-    """Raise exception when key path is invalid"""
-    data = {}
-    proxy = nested.NProxy(data)
-    try:
-        proxy.nset("key1[0].key2[-1].key3", "value")
-    except nested.NestedOperationError:
-        pass
+def test_nproxy_nset_raises():
+    with pytest.raises(nested.NestedOperationError):
+        nested.NProxy().nset("key1[0].key2[-1].key3", "value")
 
 
-def test_nset_setitem():
-    data = nested.ncopy(DATA_SOURCE)
-    proxy = nested.NProxy(data)
+def test_nproxy_setitem(DATA_SOURCE):
+    proxy = nested.NProxy(DATA_SOURCE)
     expected = "value2 (created)"
     proxy["key1[0].key2[-1].key4"] = expected
-    result = data["key1"][0]["key2"][-1]["key4"]
-    assert result == expected
+    assert proxy["key1"][0]["key2"][-1]["key4"] == expected
 
 
-def test_nset_setitem_raises():
-    """Raise exception when key path is invalid"""
-    data = {}
-    proxy = nested.NProxy(data)
-    try:
-        proxy["key1[0].key2[-1].key3"] = "value"
-    except nested.NestedOperationError:
-        pass
+def test_nproxy_setitem_raises():
+    with pytest.raises(nested.NestedOperationError):
+        nested.NProxy()["key1[0].key2[-1].key3"] = "value"
 
 
-def test_ndel():
-    data = nested.ncopy(DATA_SOURCE)
-    proxy = nested.NProxy(data)
-    expected = {}
+def test_nproxy_ndel(DATA_SOURCE):
+    proxy = nested.NProxy(DATA_SOURCE)
     proxy.ndel("key1[0].key2[-1].key3")
-    result = data["key1"][0]["key2"][-1]
-    assert result == expected
+    assert proxy["key1"][0]["key2"][-1] == {}
 
 
-def test_ndel_raises():
-    """Raise exception when key path is invalid"""
-    data = {}
-    proxy = nested.NProxy(data)
-    try:
-        proxy.ndel("key1[0].key2[-1].key3")
-    except nested.NestedOperationError:
-        pass
+def test_nproxy_ndel_raises():
+    with pytest.raises(nested.NestedOperationError):
+        nested.NProxy().ndel("key1[0].key2[-1].key3")
 
 
-def test_ndel_delitem():
-    data = nested.ncopy(DATA_SOURCE)
-    proxy = nested.NProxy(data)
-    expected = {}
-    proxy.ndel("key1[0].key2[-1].key3")
-    result = data["key1"][0]["key2"][-1]
-    assert result == expected
+def test_nproxy_delitem(DATA_SOURCE):
+    proxy = nested.NProxy(DATA_SOURCE)
+    del proxy["key1[0].key2[-1].key3"]
+    assert proxy["key1"][0]["key2"][-1] == {}
 
 
-def test_ndel_delitem_raises():
-    """Raise exception when key path is invalid"""
-    data = {}
-    proxy = nested.NProxy(data)
-    try:
-        del proxy["key1[0].key2[-1].key3"]
-    except nested.NestedOperationError:
-        pass
+def test_nproxy_delitem_raises():
+    with pytest.raises(nested.NestedOperationError):
+        del nested.NProxy()["key1[0].key2[-1].key3"]
 
 
-def test_ncontains():
-    data = nested.ncopy(DATA_SOURCE)
-    proxy = nested.NProxy(data)
-    expected = True
-    result = "key1[0].key2[-1].key3" in proxy
-    assert result == expected
+def test_nproxy_ncopy(DATA_SOURCE):
+    assert nested.NProxy(DATA_SOURCE).ncopy() == DATA_SOURCE
 
 
-def main():
-
-    tests = (
-        ("nget", test_nget),
-        ("nget_raises", test_nget_raises),
-        ("nget_default", test_nget_default),
-
-        ("nset", test_nset),
-        ("nset_raises", test_nset_raises),
-
-        ("ndel", test_ndel),
-        ("ndel_raises", test_ndel_raises),
-
-        ("nget_getitem", test_nget_getitem),
-        ("nget_getitem_raises", test_nget_getitem_raises),
-
-        ("nset_setitem", test_nset_setitem),
-        ("nset_setitem_raises", test_nset_setitem_raises),
-
-        ("ndel_delitem", test_ndel_delitem),
-        ("ndel_delitem_raises", test_ndel_delitem_raises),
-
-        ("ncontains", test_ncontains),
-    )
-
-    for name, func in tests:
-        print("[*] Testing %s()..." % name)
-        func()
+def test_ncontains(DATA_SOURCE):
+    proxy = nested.NProxy(DATA_SOURCE)
+    assert ("key1[0].key2[-1].key3" in proxy) is True
 
 
-if __name__ == "__main__":
-    main()
+def test_ncontains_return_false(DATA_SOURCE):
+    proxy = nested.NProxy(DATA_SOURCE)
+    assert ("key1[0].key2[-1].missing_key" in proxy) is False

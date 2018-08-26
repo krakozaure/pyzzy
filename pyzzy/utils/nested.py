@@ -2,7 +2,7 @@ from copy import deepcopy
 from itertools import chain as itertools_chain
 
 
-class Unset(object):
+class Unset:
     def __repr__(self):
         return "<UNSET>"
 
@@ -62,7 +62,7 @@ class NProxy(ProxyBase):
         ndel(self.data, key)
 
     def ncopy(self):
-        return ncopy(self.data)
+        return deepcopy(self.data)
 
 
 def nget(data, key, default=None):
@@ -116,10 +116,6 @@ def resolve_key_path(data, key_path):
         data = data[key]
 
     return (data, last_key)
-
-
-def ncopy(data):
-    return deepcopy(data)
 
 
 def _split_key_path(key_path):

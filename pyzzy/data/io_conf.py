@@ -40,14 +40,14 @@ def conf2dict(conf, include_default=True, factory=None):
 
     for section_name in conf:
 
-        if section_name == configparser.DEFAULTSECT and not include_default:
+        if section_name == conf.default_section and not include_default:
             continue
 
         section = conf[section_name]
         conf_dict[section_name] = factory(
             (key, section.get(key, raw=False))
             for key in section
-            if not _in_defaults(conf, section_name, key)
+            if key not in conf.defaults()
         )
 
     return conf_dict
@@ -58,20 +58,9 @@ def _conf_factory(settings):
     # By default, each option name are converted in lowercase by python
     # If no optionxform is given, identity avoid option name modifications
     optionxform = settings.pop("optionxform", identity)
-    optionxform = optionxform if callable else identity
+    optionxform = optionxform if callable(optionxform) else identity
 
     parser = configparser.ConfigParser(**settings)
     parser.optionxform = optionxform
 
     return parser
-
-
-def _in_defaults(conf, section, key):
-    if configparser.DEFAULTSECT not in conf:
-        return False
-
-    return (
-        section != "DEFAULT"
-        and key in conf["DEFAULT"]
-        and conf["DEFAULT"][key] == conf[section][key]
-    )

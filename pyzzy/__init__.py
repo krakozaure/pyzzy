@@ -15,14 +15,14 @@ from .data import (
     load_toml,
     load_yaml,
 )
-from .logs import init_logger, init_logging, getLogger
+from .logs import getLogger, init_logging
 from .utils import set_working_directory
 
 
 __author__ = "krakozaure"
 __license__ = "MIT"
 __name__ = "pyzzy"
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 
 __all__ = [
     "dump",
@@ -38,7 +38,6 @@ __all__ = [
     "load_toml",
     "load_yaml",
     "getLogger",
-    "init_logger",
     "init_logging",
     "set_working_directory",
 ]

@@ -17,47 +17,12 @@ from .vars import DEFAULT_CONFIG
 
 __all__ = [
     "getLogger",
-    "init_logger",
     "init_logging",
-    "load_config",
     "PzConsoleFormatter",
-    "PzFileFormatter",
     "PzFileHandler",
     "PzTimedRotatingFileHandler",
     "PzWarningsFormatter",
 ]
-
-
-def init_logger(name, config=None, captureWarnings=True, raiseExceptions=False):
-
-    warnings.warn(
-        "'pyzzy.init_logger' will be deprecated in future releases !"
-        "\nPlease use 'pyzzy.init_logging' and then 'pyzzy.getLogger' !",
-        PendingDeprecationWarning,
-    )
-
-    init_logging(
-        config=config,
-        capture_warnings=captureWarnings,
-        raise_exceptions=raiseExceptions,
-    )
-
-    return getLogger(name)
-
-
-def load_config(config=None, captureWarnings=True, raiseExceptions=False):
-
-    warnings.warn(
-        "'pyzzy.logs.load_config' will be deprecated in future releases !"
-        "\nPlease use 'pyzzy.init_logging' !",
-        PendingDeprecationWarning,
-    )
-
-    init_logging(
-        config=config,
-        capture_warnings=captureWarnings,
-        raise_exceptions=raiseExceptions,
-    )
 
 
 def init_logging(config=None, capture_warnings=True, simple_warnings=True,
@@ -79,10 +44,7 @@ def init_logging(config=None, capture_warnings=True, simple_warnings=True,
         Should be False in production, True for development
     """
 
-    if config is None:
-        config = DEFAULT_CONFIG
-    elif is_file(config):
-        config = load(config)
+    config = _get_config(config)
 
     if config:
         logging.config.dictConfig(config)
@@ -95,5 +57,14 @@ def init_logging(config=None, capture_warnings=True, simple_warnings=True,
     logging.raiseExceptions = raise_exceptions
 
 
-def simple_warning_format(message, category, filename, lineno, line=None):
+def _get_config(config):
+    if config is None:
+        return DEFAULT_CONFIG
+    elif is_file(config):
+        return load(config)
+    else:
+        return config
+
+
+def simple_warning_format(message, category, *args, **kwargs):
     return "%s: %s" % (category.__name__, str(message))
