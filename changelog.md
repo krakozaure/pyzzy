@@ -1,4 +1,11 @@
+### v0.0.7
+
+**Add minor changes**
+
+
 ### v0.0.6
+
+**Add more tests and enhance coverage**
 
 **Added**
 - Several tests functions in all `tests/*.py` files
