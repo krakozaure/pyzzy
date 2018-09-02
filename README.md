@@ -1,3 +1,9 @@
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/pyzzy.svg)](https://pypi.org/project/pyzzy/)
+[![PyPI version](https://img.shields.io/pypi/v/pyzzy.svg)](https://pypi.org/project/pyzzy/)
+[![Downloads](http://pepy.tech/badge/pyzzy)](http://pepy.tech/project/pyzzy)
+[![GitHub license](https://img.shields.io/github/license/krakozaure/pyzzy.svg)](https://github.com/krakozaure/pyzzy/blob/master/LICENSE)
+[![codecov](https://codecov.io/gh/krakozaure/pyzzy/branch/master/graph/badge.svg)](https://codecov.io/gh/krakozaure/pyzzy)
+
 # pyzzy
 
 Set of packages to simplify development in Python :
