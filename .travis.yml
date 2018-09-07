@@ -10,4 +10,5 @@ install:
 # command to run tests
 script: pytest
 after_success:
-  - coveralls
+  - pytest --cov-report term --cov-report xml  --cov=pyzzy tests/
+  - codecov
