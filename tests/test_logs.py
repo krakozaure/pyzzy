@@ -12,9 +12,6 @@ import pyzzy as pz
 
 os.chdir(os.path.dirname(__file__))
 
-if not os.path.exists("./logs"):
-    os.mkdir("./logs", mode=777)
-
 pz.init_logging(
     config=pz.logs.DEFAULT_CONFIG,
     capture_warnings=True,
