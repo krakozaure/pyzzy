@@ -1,5 +1,7 @@
+include .travis.yml
 include changelog.md
 include LICENSE
+include MANIFEST.in
 include pytest.ini
 include README.md
 include requirements.txt
@@ -8,3 +10,4 @@ include tox.ini
 
 recursive-include tests *.py
 recursive-include tests/configurations *.json
+recursive-include tests/logs *.txt

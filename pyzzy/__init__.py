@@ -21,7 +21,7 @@ from .utils import set_working_directory
 
 __author__ = "krakozaure"
 __license__ = "MIT"
-__version__ = "0.0.7"
+__version__ = "0.0.8"
 
 __all__ = [
     "dump",

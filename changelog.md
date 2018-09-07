@@ -1,3 +1,17 @@
+### v0.0.8
+
+**Add support for travis and codecov**
+
+**Added**
+- Support for travis and codecov
+- Some docstrings/comments in `pyzzy/data/core.py`
+
+**Modified**
+- Test in `tests/test_logs.py`
+- Requirements in `tests-requirements.txt`
+- Badges in `README.md`
+
+
 ### v0.0.7
 
 **Add minor changes**
