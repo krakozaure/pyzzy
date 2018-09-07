@@ -22,7 +22,7 @@ __all__ = [
     "load_yaml",
 ]
 
-
+# Mapping that associate file extension to the appropriate dump function
 dumpers = {
     "cfg": dump_conf,
     "conf": dump_conf,
@@ -33,6 +33,7 @@ dumpers = {
     "yml": dump_yaml,
 }
 
+# Mapping that associate file extension to the appropriate load function
 loaders = {
     "cfg": load_conf,
     "conf": load_conf,
@@ -45,7 +46,16 @@ loaders = {
 
 
 def dump(data, file_path, **settings):
-    """Dump data based on the file extension"""
+    """Dumps data to the appropriate format based on the file extension
+
+    Args:
+        data: Python object to dump.
+        file_path (str, PathLike): File path used to write serialized data.
+        settings: Optional arguments used by the dump funtion.
+
+    Returns:
+        str: Serialized data
+    """
 
     # Avoid errors with Path objects
     file_path = fspath(file_path)
@@ -60,7 +70,15 @@ def dump(data, file_path, **settings):
 
 
 def load(file_path, **settings):
-    """Load data based on the file extension"""
+    """Loads data from the appropriate format based on the file extension
+
+    Args:
+        file_path (str, PathLike): File path used to read serialized data.
+        settings: Optional arguments used by the load funtion.
+
+    Returns:
+        str: Deserialized data
+    """
 
     # Avoid errors with Path objects
     file_path = fspath(file_path)
