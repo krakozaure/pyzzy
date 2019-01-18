@@ -54,12 +54,9 @@ def test_root_handlers_names():
     import _pytest.logging
 
     logger = logging.getLogger()
-    root_handlers_names = [
-        h.get_name()
-        for h in logger.handlers
-        if not isinstance(h, _pytest.logging.LogCaptureHandler)
-    ]
-    assert root_handlers_names == ["console_production", "tr_file"]
+    handlers_names = [handler.get_name() for handler in logger.handlers]
+    expected_names = {"console_production", "tr_file"}
+    assert expected_names.issubset(handlers_names)
 
 
 def test_root_console_handler_output():
