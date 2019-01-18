@@ -9,3 +9,6 @@ install:
   - pip install .
 # command to run tests
 script: pytest
+after_success:
+  - pytest --verbose --cov-report term --cov-report html --cov-report xml --cov=pyzzy tests/
+  - codecov
