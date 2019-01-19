@@ -15,7 +15,6 @@ class NestedOperationError(Exception):
 
 
 class ProxyBase(object):
-
     def __init__(self, data=None):
         self.data = data or {}
 
@@ -39,7 +38,6 @@ class ProxyBase(object):
 
 
 class NProxy(ProxyBase):
-
     def __getitem__(self, key):
         return nget(self.data, key, default=UNSET)
 
@@ -122,12 +120,12 @@ def _split_key_path(key_path):
     if not key_path or not isinstance(key_path, (str, bytes)):
         raise ValueError("'key_path' must be a non-empty string")
 
-    if '.' in key_path:
+    if "." in key_path:
         keys_list = _split_keys(key_path)
     else:
         keys_list = _split_indexes(key_path)
 
-    keys_list = [k for k in keys_list if k != '']
+    keys_list = [k for k in keys_list if k != ""]
     if not keys_list:
         raise ValueError("invalid 'key_path'")
 
@@ -135,19 +133,19 @@ def _split_key_path(key_path):
 
 
 def _split_keys(key_path):
-    if '.' not in key_path:
+    if "." not in key_path:
         return [key_path]
 
-    return itertools_chain(*(_split_indexes(k) for k in key_path.split('.')))
+    return itertools_chain(*(_split_indexes(k) for k in key_path.split(".")))
 
 
 def _split_indexes(key_path):
-    if '[' not in key_path:
+    if "[" not in key_path:
         return [key_path]
 
-    # key_path = 'foo[0][0]' --> key = 'foo', indexes=(0, 0)
-    # key_path = '[0][0]'    --> key = '',    indexes=(0, 0)
-    parts = key_path.split('[')
+    # key_path = "foo[0][0]" --> key = "foo", indexes=(0, 0)
+    # key_path = "[0][0]"    --> key = "",    indexes=(0, 0)
+    parts = key_path.split("[")
     key = parts[0]
     indexes = (int(k[:-1]) for k in parts[1:])
     return itertools_chain([key], indexes)

@@ -17,8 +17,8 @@ def identity(var):
     return var
 
 
-def open_stream(resource=None, mode='r', encoding='utf-8'):
-    read_mode = 'r' in mode
+def open_stream(resource=None, mode="r", encoding="utf-8"):
+    read_mode = "r" in mode
     as_file = is_file(resource)
 
     if (read_mode and as_file) or (not read_mode and resource):
@@ -26,7 +26,7 @@ def open_stream(resource=None, mode='r', encoding='utf-8'):
         stream = open(resource, mode=mode, encoding=encoding)
 
     elif (read_mode and not as_file) or (not read_mode and not resource):
-        stream = io.StringIO(resource or '')
+        stream = io.StringIO(resource or "")
 
     return stream
 
@@ -100,7 +100,7 @@ def search_files(directory, patterns=None, recursive=False):
     # Search could be recursive
     glob_pattern = "**" if recursive else "."
     # Filename could be filtered wih 0, 1 or N patterns
-    glob_pattern += '/*'
+    glob_pattern += "/*"
 
     # Scan directory and yield only required file paths
     for entry in directory.glob(glob_pattern):

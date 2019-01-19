@@ -16,11 +16,10 @@ RX_VAR = r"""
 \s*\}\}
 """
 CRX_VAR = re.compile(RX_VAR, re.X | re.UNICODE)
-CRX_KEY = re.compile(r'[\w\-]+', re.UNICODE)
+CRX_KEY = re.compile(r"[\w\-]+", re.UNICODE)
 
 
 def render(string, datas, default=None, crx_idpattern=CRX_VAR):
-
     def repl(sre_match, default=default):
         if default is None:
             default = sre_match.group(0)
@@ -41,7 +40,7 @@ def traverse(obj, key, default=None):
     for key in keys_list:
 
         # Avoid private-like key access
-        if key.startswith('__'):
+        if key.startswith("__"):
             return default
 
         result = get_value(result, key, default)

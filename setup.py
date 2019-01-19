@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyzzy",
-    version="0.0.8",
+    version="0.0.9",
     author="krakozaure",
     license="MIT License",
     author_email="",
@@ -14,15 +14,8 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/krakozaure/pyzzy",
     packages=setuptools.find_packages(),
-    install_requires=[
-        "colorama",
-        "ruamel.yaml",
-        "toml",
-    ],
-    tests_require=[
-        "pytest",
-        "tox",
-    ],
+    install_requires=["colorama", "ruamel.yaml", "toml"],
+    tests_require=["pytest", "tox"],
     classifiers=(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",

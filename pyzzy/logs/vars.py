@@ -162,8 +162,5 @@ DEFAULT_CONFIG = {
             "handlers": ["console_warnings", "tr_file_warnings"],
         },
     },
-    "root": {
-        "level": "DEBUG",
-        "handlers": ["console_production", "tr_file"],
-    },
+    "root": {"level": "DEBUG", "handlers": ["console_production", "tr_file"]},
 }

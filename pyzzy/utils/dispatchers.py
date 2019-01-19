@@ -5,7 +5,6 @@ __all__ = ["predicate_dispatch", "singledispatch"]
 
 
 class predicate_dispatch:
-
     def __init__(self, default_callback):
         self.default_callback = default_callback
         self.registry = {}
