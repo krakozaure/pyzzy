@@ -1,4 +1,9 @@
-include .travis.yml
+graft pyzzy
+graft tests
+
+global-exclude __pycache__
+global-exclude *.pyc
+
 include changelog.md
 include LICENSE
 include MANIFEST.in
@@ -7,7 +12,3 @@ include README.md
 include requirements.txt
 include tests-requirements.txt
 include tox.ini
-
-recursive-include tests *.py
-recursive-include tests/configurations *.json
-recursive-include tests/logs *.txt

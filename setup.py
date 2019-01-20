@@ -13,7 +13,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/krakozaure/pyzzy",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(exclude=["tests"]),
     install_requires=["colorama", "ruamel.yaml", "toml"],
     tests_require=["pytest", "tox"],
     classifiers=[
