@@ -1,3 +1,11 @@
+### v0.0.10
+
+- Fix bad configuration for packaging
+- Fix a bad escaped regexp in `tests/test_logs.py`
+- Add python 3.4 test for Travis
+- Update year in `LICENSE`
+
+
 ### v0.0.9
 
 **Reformat some files (black)**
