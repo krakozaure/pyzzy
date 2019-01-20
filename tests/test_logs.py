@@ -114,7 +114,7 @@ def test_warnings_console_formatter():
         logger.warning(message)
         captured_output = stream.getvalue()
 
-    warning_re = "(?P<file>.+?):(?P<line>\d+?): (?P<message>.+)"
+    warning_re = r"(?P<file>.+?):(?P<line>\d+?): (?P<message>.+)"
     warning_cre = re.compile(warning_re)
     sre_matches = [match for match in warning_cre.finditer(captured_output)]
 
