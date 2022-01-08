@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyzzy",
-    version="0.0.10",
+    version="0.0.11",
     author="krakozaure",
     license="MIT License",
     author_email="",

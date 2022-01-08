@@ -1,3 +1,8 @@
+### v0.0.11
+
+- Add project status
+- Bump version
+
 ### v0.0.10
 
 - Fix bad configuration for packaging
