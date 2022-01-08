@@ -12,6 +12,10 @@ Set of packages to simplify development in Python :
 - logs (colored StreamHandler, FileHandler, TimeRotatingFileHandler)
 - utils 
 
+### Status
+
+This project is currently unmaintained but the project is not abandonned !
+
 ### Requirements
 
 - Python 3.4+ (Python 3.6+ is preferred)
